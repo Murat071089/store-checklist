@@ -2255,3 +2255,116 @@ body {
   background: var(--bg-deep) url('../icons/bg_light.png') no-repeat center center fixed !important;
   background-size: cover !important;
 }
+
+/* Instructions Button & Modal styling */
+.btn-instructions-link {
+  background: transparent;
+  border: none;
+  color: var(--accent-bright);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 16px auto 0;
+  transition: all var(--transition);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.btn-instructions-link:hover {
+  color: var(--accent-light);
+  transform: translateY(-1px);
+}
+.btn-instructions-link:active {
+  transform: translateY(0);
+}
+
+.instruction-modal-content {
+  background: linear-gradient(135deg, rgba(27, 21, 17, 0.88) 0%, rgba(19, 16, 14, 0.96) 100%) !important;
+  border: 1px solid rgba(216, 138, 50, 0.25) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: 30px 24px !important;
+  width: 100%;
+  max-width: 450px !important;
+  text-align: left !important;
+  color: var(--text-primary) !important;
+  position: relative;
+}
+
+.light-theme .instruction-modal-content {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 246, 242, 0.98) 100%) !important;
+  border-color: rgba(216, 138, 50, 0.25) !important;
+  box-shadow: 0 12px 32px rgba(45, 37, 30, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+  color: var(--text-primary) !important;
+}
+
+.instruction-modal-content h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-right: 32px;
+  color: var(--text-primary);
+}
+
+.instruction-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+.instruction-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+}
+.light-theme .instruction-close-btn {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-secondary);
+}
+.light-theme .instruction-close-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+}
+
+.instruction-text p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.instruction-text ol {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.instruction-text li {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.instruction-text li b {
+  color: var(--text-primary);
+}

@@ -137,10 +137,36 @@
         <div class="tasks-list" id="evening-tasks"></div>
       </div>
     </section>
+
+    <!-- Instructions Button -->
+    <div style="text-align: center; margin-top: 16px;">
+      <button id="show-instructions-btn" class="btn-instructions-link">
+        📖 Инструкция для сотрудников
+      </button>
+    </div>
   </div>
 
   <div id="toast" class="toast"></div>
   <div id="offline-banner" class="offline-banner">⚠️ Нет подключения</div>
+
+  <!-- Instructions Modal -->
+  <div id="instructions-modal" class="pin-modal">
+    <div class="pin-modal-content instruction-modal-content">
+      <button class="instruction-close-btn" id="instructions-close">✕</button>
+      <h2>📖 Инструкция для сотрудников</h2>
+      <div class="instruction-text">
+        <p>Добро пожаловать в систему контроля «Империя Обуви & Adalaniy Kids»! Пожалуйста, ознакомьтесь с правилами работы:</p>
+        <ol>
+          <li>🌅 <b>До 10:00</b> — пошагово выполните первые <b>9 утренних пунктов</b>.</li>
+          <li>☀️ <b>В течение дня</b> — выполните <b>2 дневных пункта</b> (включая фиксацию посетителей).</li>
+          <li>🌆 <b>До 20:00</b> — выполните последние <b>8 вечерних пунктов</b>.</li>
+          <li>🔔 <b>Мгновенные уведомления:</b> при нажатии кнопки <b>✓ Выполнено</b> в Telegram руководителя сразу отправляется отчёт с точным временем (до секунды). <b>Очень важно:</b> отмечайте задачи только тогда, когда вы их выполнили, не нажимайте всё разом в конце дня!</li>
+          <li>❌ <b>Если пункт не выполнен:</b> нажмите на <b>крестик (✕)</b> и напишите причину, почему задача не была выполнена. Этот отчёт также мгновенно отправится руководителю.</li>
+          <li>🌗 <b>День / Ночь:</b> для вашего удобства в верхнем правом углу есть переключатель темы (Солнце / Луна), вы можете переключать его по вкусу.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
 
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
@@ -148,6 +174,18 @@
   <script src="js/employee.js"></script>
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+    // Instructions Modal Handlers
+    const instModal = document.getElementById('instructions-modal');
+    const showBtn = document.getElementById('show-instructions-btn');
+    const closeBtn = document.getElementById('instructions-close');
+    if (showBtn && instModal && closeBtn) {
+      showBtn.addEventListener('click', () => instModal.classList.add('active'));
+      closeBtn.addEventListener('click', () => instModal.classList.remove('active'));
+      instModal.addEventListener('click', (e) => {
+        if (e.target === instModal) instModal.classList.remove('active');
+      });
+    }
   </script>
 </body>
 </html>
