@@ -2257,30 +2257,43 @@ body {
 }
 
 /* Instructions Button & Modal styling */
-.btn-instructions-link {
-  background: transparent;
-  border: none;
-  color: var(--accent-bright);
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+.info-circle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   cursor: pointer;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 16px auto 0;
+  justify-content: center;
   transition: all var(--transition);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  padding: 0;
 }
-.btn-instructions-link:hover {
-  color: var(--accent-light);
-  transform: translateY(-1px);
+.info-circle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-bright);
+  border-color: var(--border-accent);
+  transform: scale(1.05);
 }
-.btn-instructions-link:active {
-  transform: translateY(0);
+.info-circle-btn:active {
+  transform: scale(0.95);
+}
+.info-circle-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  display: block;
+}
+.light-theme .info-circle-btn {
+  background: rgba(45, 37, 30, 0.03);
+  border-color: rgba(45, 37, 30, 0.08);
+}
+.light-theme .info-circle-btn:hover {
+  background: rgba(45, 37, 30, 0.08);
+  color: var(--accent-bright);
+  border-color: var(--border-accent);
 }
 
 .instruction-modal-content {
