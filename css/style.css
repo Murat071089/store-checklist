@@ -2153,3 +2153,96 @@ button {
 .ios-instructions li {
   margin-bottom: 4px;
 }
+
+/* ============================================
+   Skeuomorphic Theme Switcher & Starry Background
+   ============================================ */
+
+/* Body Background Starry Sky */
+body {
+  background: var(--bg-deep) url('../icons/bg_dark.png') no-repeat center center fixed !important;
+  background-size: cover !important;
+}
+.light-theme body {
+  background: var(--bg-deep) url('../icons/bg_light.png') no-repeat center center fixed !important;
+  background-size: cover !important;
+}
+
+/* Glassmorphic Page Wrappers on Desktop */
+@media (min-width: 481px) {
+  .employee-page, .admin-page {
+    background: linear-gradient(135deg, rgba(27, 21, 17, 0.72) 0%, rgba(19, 16, 14, 0.88) 100%) !important;
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--border-accent) !important;
+  }
+  .light-theme .employee-page, .light-theme .admin-page {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(250, 246, 242, 0.95) 100%) !important;
+    border-color: rgba(216, 138, 50, 0.22) !important;
+  }
+}
+
+/* Skeuomorphic Theme Switch Capsule */
+.theme-switch {
+  width: 72px;
+  height: 32px;
+  border-radius: 99px;
+  background: #181818;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.light-theme .theme-switch {
+  background: linear-gradient(180deg, #FF9F68, #E58957);
+  border-color: #C9782E;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 0 15px rgba(229, 137, 87, 0.45);
+}
+.theme-switch .switch-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #3a3a3a, #222222);
+  border: 1px solid #1a1a1a;
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background var(--transition), border-color var(--transition);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+.light-theme .theme-switch .switch-thumb {
+  left: 43px;
+  background: linear-gradient(180deg, #FFFFFF, #FFEFE7);
+  border-color: #FFB85C;
+  box-shadow: 0 2px 6px rgba(201, 120, 46, 0.3);
+}
+.theme-switch svg {
+  width: 14px;
+  height: 14px;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity var(--transition), color var(--transition);
+}
+.theme-switch .sun-icon {
+  color: rgba(255, 255, 255, 0.15);
+}
+.light-theme .theme-switch .sun-icon {
+  color: #FFFFFF;
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.8));
+}
+.theme-switch .moon-icon {
+  color: #A0A0A0;
+  filter: drop-shadow(0 0 2px rgba(160,160,160,0.3));
+}
+.light-theme .theme-switch .moon-icon {
+  color: rgba(0, 0, 0, 0.1);
+}

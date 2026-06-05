@@ -9,22 +9,6 @@
   function applyTheme(theme) {
     const isLight = theme === 'light';
     document.documentElement.classList.toggle('light-theme', isLight);
-    
-    // Синхронизируем иконки переключателей
-    const toggles = document.querySelectorAll('#theme-toggle');
-    toggles.forEach(toggle => {
-      const sunIcon = toggle.querySelector('.sun-icon');
-      const moonIcon = toggle.querySelector('.moon-icon');
-      if (sunIcon && moonIcon) {
-        if (isLight) {
-          sunIcon.style.display = 'none';
-          moonIcon.style.display = 'block';
-        } else {
-          sunIcon.style.display = 'block';
-          moonIcon.style.display = 'none';
-        }
-      }
-    });
   }
 
   // Считываем сохраненную тему (по умолчанию темная)
