@@ -625,8 +625,8 @@
       undoTimers.delete(timerKey);
     }
 
-    // Отправляем уведомление об отмене
-    API._sendTelegram(`↩️ <b>Отмена:</b> ${currentUser.name} отменил(a) отметку «${type === 'arrive' ? 'Я на работе' : 'Ушла с работы'}»`);
+    // Отменяем в Supabase и Telegram
+    API.undoWorkStatus(currentUser.name, type);
 
     checkAndUpdateWorkStatus();
     showToast('↩ Отметка отменена', 'success');
@@ -681,11 +681,17 @@
 
         showWishModal('leave');
 
-        // Таймер отмены 60 секунд
+        // Таймер отмены 60 секунд. После истечения — сброс всех задач у сотрудника
         const expireAt = Date.now() + CONFIG.UNDO_TIMEOUT;
         const timerId = setTimeout(() => {
           undoTimers.delete('_leave');
+          // Сбрасываем все задачи сотрудника из localStorage (в Supabase остаются для админки)
+          const todayDate = formatDateAPI(new Date());
+          localStorage.removeItem('checklist_data_' + todayDate);
+          localStorage.removeItem('checklist_customers_' + todayDate);
+          completedTasks = {};
           checkAndUpdateWorkStatus();
+          renderAll();
         }, CONFIG.UNDO_TIMEOUT);
         undoTimers.set('_leave', { timerId, expireAt });
 

@@ -454,6 +454,9 @@ const API = {
   async logWorkStatus(employee, status) {
     const isArrive = status === 'arrive';
     const timeStr = this._nowTimeStr();
+    const date = this._todayKey();
+    const taskId = isArrive ? '_arrive' : '_leave';
+    const taskName = isArrive ? 'Я на работе' : 'Ушла с работы';
     
     let msg = ``;
     if (isArrive) {
@@ -463,6 +466,54 @@ const API = {
     }
     
     await this._sendTelegram(msg);
+
+    // Сохраняем в Supabase для отображения в админке
+    if (this._isConfigured()) {
+      try {
+        const payload = {
+          date,
+          employee,
+          task_id: taskId,
+          task_name: taskName,
+          section: 'status',
+          status: 'completed',
+          is_late: false,
+          time_str: timeStr,
+          completed_at: new Date().toISOString()
+        };
+        await fetch(`${this._baseUrl()}/rest/v1/checklist_entries`, {
+          method: 'POST',
+          headers: this._headers({ 'Prefer': 'resolution=merge-duplicates' }),
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.error('Ошибка сохранения статуса в Supabase:', err);
+      }
+    }
+
     return { success: true, timeStr };
+  },
+
+  /**
+   * Отменить отметку прихода/ухода
+   */
+  async undoWorkStatus(employee, status) {
+    const date = this._todayKey();
+    const taskId = status === 'arrive' ? '_arrive' : '_leave';
+
+    if (this._isConfigured()) {
+      try {
+        const url = `${this._baseUrl()}/rest/v1/checklist_entries?date=eq.${date}&employee=eq.${encodeURIComponent(employee)}&task_id=eq.${encodeURIComponent(taskId)}`;
+        await fetch(url, {
+          method: 'DELETE',
+          headers: this._headers()
+        });
+      } catch (err) {
+        console.error('Ошибка удаления статуса из Supabase:', err);
+      }
+    }
+
+    await this._sendTelegram(`↩️ <b>Отмена:</b> ${employee} отменил(а) отметку «${status === 'arrive' ? 'Я на работе' : 'Ушла с работы'}»`);
+    return { success: true };
   }
 };

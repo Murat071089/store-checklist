@@ -276,23 +276,24 @@
       const el = document.getElementById(`${key}-work-status`);
       if (!el) return;
 
-      const arriveKey = `status_arrive_${emp}_${selectedDate}`;
-      const leaveKey = `status_leave_${emp}_${selectedDate}`;
-      const arriveTime = localStorage.getItem(arriveKey);
-      const leaveTime = localStorage.getItem(leaveKey);
+      // Читаем из Supabase данных (dayData.tasks) по композитным ключам
+      const arriveData = dayData.tasks[emp + '__arrive'];
+      const leaveData = dayData.tasks[emp + '__leave'];
 
       let html = '';
 
       // Приход
-      if (arriveTime) {
-        html += `<div class="work-status-row arrived">${loginIcon} Пришла на работу <span class="status-time">${arriveTime}</span></div>`;
+      if (arriveData) {
+        const time = arriveData.timeStr || extractTime(arriveData.completedAt);
+        html += `<div class="work-status-row arrived">${loginIcon} Пришла на работу <span class="status-time">${time}</span></div>`;
       } else {
         html += `<div class="work-status-row not-yet">${loginIcon} Не отметилась</div>`;
       }
 
       // Уход
-      if (leaveTime) {
-        html += `<div class="work-status-row left">${logoutIcon} Ушла с работы <span class="status-time">${leaveTime}</span></div>`;
+      if (leaveData) {
+        const time = leaveData.timeStr || extractTime(leaveData.completedAt);
+        html += `<div class="work-status-row left">${logoutIcon} Ушла с работы <span class="status-time">${time}</span></div>`;
       } else {
         html += `<div class="work-status-row not-yet">${logoutIcon} Ещё на работе</div>`;
       }
