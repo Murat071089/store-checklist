@@ -71,6 +71,169 @@
   --transition-spring: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* --- Light Theme Variables --- */
+:root.light-theme {
+  --bg-deep: #F7F5F2;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #FCFAF7;
+  --bg-elevated: #FAF6F2;
+  
+  --bg-glass: rgba(255, 255, 255, 0.72);
+  --bg-glass-card: rgba(255, 255, 255, 0.65);
+  --bg-glass-hover: rgba(216, 138, 50, 0.06);
+  --bg-glass-active: rgba(216, 138, 50, 0.1);
+  --bg-input: rgba(255, 255, 255, 0.9);
+
+  --accent: #C9782E;
+  --accent-bright: #D88A32;
+  --accent-light: #E99742;
+  --accent-deep: #A75F1E;
+  --accent-glow: rgba(216, 138, 50, 0.12);
+  --accent-glow-strong: rgba(216, 138, 50, 0.25);
+  --accent-surface: rgba(216, 138, 50, 0.05);
+
+  --success: #5AA86C;
+  --success-bright: #6BB97E;
+  --success-glow: rgba(90, 168, 108, 0.15);
+  --success-surface: rgba(90, 168, 108, 0.05);
+
+  --error: #C9683E;
+  --error-bright: #D87B4E;
+  --error-glow: rgba(201, 104, 62, 0.15);
+  --error-surface: rgba(201, 104, 62, 0.05);
+  --error-critical: #D32F2F;
+
+  --text-primary: #2D251E;
+  --text-secondary: #6E6459;
+  --text-muted: #9E9489;
+  --text-disabled: #C8C0B5;
+
+  --border: rgba(45, 37, 30, 0.08);
+  --border-accent: rgba(216, 138, 50, 0.18);
+  --border-success: rgba(90, 168, 108, 0.18);
+  --border-error: rgba(201, 104, 62, 0.18);
+
+  --shadow-sm: 0 2px 4px rgba(45, 37, 30, 0.05);
+  --shadow-md: 0 8px 16px rgba(45, 37, 30, 0.08);
+  --shadow-lg: 0 16px 40px rgba(45, 37, 30, 0.12);
+  --shadow-glow: 0 0 25px rgba(216, 138, 50, 0.06);
+}
+
+/* --- Ambient Glow overrides for Light Theme --- */
+.light-theme body::before {
+  background: radial-gradient(circle, rgba(216, 138, 50, 0.12) 0%, rgba(216, 138, 50, 0.03) 45%, transparent 70%);
+}
+.light-theme body::after {
+  background: radial-gradient(circle, rgba(216, 138, 50, 0.08) 0%, rgba(216, 138, 50, 0.02) 50%, transparent 70%);
+}
+.light-theme .cinematic-vignette {
+  background: radial-gradient(circle, transparent 40%, rgba(247, 245, 242, 0.6) 100%);
+}
+
+/* --- Card Background Design Redesign (Default Dark & Light) --- */
+.user-btn,
+.pin-modal-content,
+.section-card,
+.employee-summary-card,
+.customers-journal,
+.detail-modal-content,
+#fail-modal .pin-modal-content,
+.ios-install-content {
+  background: linear-gradient(135deg, rgba(27, 21, 17, 0.72) 0%, rgba(19, 16, 14, 0.88) 100%) !important;
+  border: 1px solid rgba(216, 138, 50, 0.15) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+}
+
+.user-btn:hover,
+.section-card:hover,
+.employee-summary-card:hover,
+.customers-journal:hover {
+  border-color: rgba(216, 138, 50, 0.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(216, 138, 50, 0.08) !important;
+}
+
+.light-theme .user-btn,
+.light-theme .pin-modal-content,
+.light-theme .section-card,
+.light-theme .employee-summary-card,
+.light-theme .customers-journal,
+.light-theme .detail-modal-content,
+.light-theme #fail-modal .pin-modal-content,
+.light-theme .ios-install-content {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(250, 246, 242, 0.95) 100%) !important;
+  border: 1px solid rgba(216, 138, 50, 0.22) !important;
+  box-shadow: 0 12px 32px rgba(45, 37, 30, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(24px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(130%) !important;
+}
+
+.light-theme .user-btn:hover,
+.light-theme .section-card:hover,
+.light-theme .employee-summary-card:hover,
+.light-theme .customers-journal:hover {
+  border-color: rgba(216, 138, 50, 0.45) !important;
+  box-shadow: 0 16px 40px rgba(45, 37, 30, 0.12), 0 0 20px rgba(216, 138, 50, 0.04) !important;
+}
+
+/* Keypad & indicators adjustments for Light Theme */
+.light-theme .keypad-btn {
+  border: 1px solid rgba(45, 37, 30, 0.08);
+  background: rgba(45, 37, 30, 0.03);
+}
+.light-theme .keypad-btn:hover {
+  background: rgba(45, 37, 30, 0.08);
+  border-color: rgba(45, 37, 30, 0.15);
+}
+.light-theme .progress-ring-bg {
+  stroke: rgba(45, 37, 30, 0.05);
+}
+
+/* Theme Toggle Button Styling */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: 38px;
+  min-width: 38px;
+  padding: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-bright);
+  border-color: var(--border-accent);
+  transform: rotate(15deg);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.92);
+}
+
+.theme-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  transition: transform 0.5s ease;
+}
+
+/* Float style for login screen */
+.login-theme-toggle {
+  position: absolute;
+  top: max(20px, env(safe-area-inset-top));
+  right: 20px;
+  z-index: 100;
+}
+
 /* --- Base Reset --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

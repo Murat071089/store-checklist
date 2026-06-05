@@ -1,7 +1,7 @@
 // Service Worker — Чек-лист магазина v3
 // ============================================
 
-const CACHE_NAME = 'checklist-v3';
+const CACHE_NAME = 'checklist-v4';
 
 const FILES_TO_CACHE = [
   './',
@@ -12,12 +12,12 @@ const FILES_TO_CACHE = [
   './js/config.js',
   './js/api.js',
   './js/auth.js',
+  './js/theme.js',
   './js/employee.js',
   './js/admin.js',
   './js/pwa-install.js',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/pwa_logo.png'
 ];
 
 // Установка — кэшируем статические файлы
