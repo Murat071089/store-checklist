@@ -2439,3 +2439,244 @@ body {
   background: rgba(216, 138, 50, 0.06);
   border-color: rgba(216, 138, 50, 0.45);
 }
+
+/* --- Work Status (Arrive / Leave) Buttons & Container --- */
+.work-status-container {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto 20px;
+  padding: 0 20px;
+}
+
+.work-status-container.bottom-status {
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+.status-btn {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.3px;
+  border: 1px solid transparent;
+}
+
+.status-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  transition: transform var(--transition);
+}
+
+.status-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* --- Arrive Button (Success Theme) --- */
+.arrive-btn {
+  background: linear-gradient(135deg, rgba(122, 203, 138, 0.15), rgba(122, 203, 138, 0.05));
+  color: var(--success-bright);
+  border: 1px solid var(--border-success);
+  box-shadow: 0 4px 12px rgba(122, 203, 138, 0.05);
+}
+
+.arrive-btn:hover {
+  background: linear-gradient(135deg, rgba(122, 203, 138, 0.25), rgba(122, 203, 138, 0.1));
+  border-color: var(--success-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--success-glow);
+}
+
+.arrive-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* --- Leave Button (Danger Theme) --- */
+.leave-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
+}
+
+.leave-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(239, 68, 68, 0.1));
+  border-color: #EF4444;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.2);
+}
+
+.leave-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* --- Disabled / Logged State --- */
+.status-btn:disabled {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-muted) !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.65;
+}
+
+.status-btn:disabled svg {
+  transform: none !important;
+}
+
+/* --- Light Theme Overrides --- */
+.light-theme .arrive-btn {
+  background: linear-gradient(135deg, rgba(90, 168, 108, 0.18), rgba(90, 168, 108, 0.08));
+  color: var(--success);
+  border: 1px solid var(--border-success);
+  box-shadow: 0 4px 12px rgba(90, 168, 108, 0.06);
+}
+
+.light-theme .arrive-btn:hover {
+  background: linear-gradient(135deg, rgba(90, 168, 108, 0.25), rgba(90, 168, 108, 0.12));
+  border-color: var(--success-bright);
+}
+
+.light-theme .leave-btn {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.18), rgba(211, 47, 47, 0.08));
+  color: var(--error-critical);
+  border: 1px solid rgba(211, 47, 47, 0.3);
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.06);
+}
+
+.light-theme .leave-btn:hover {
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.25), rgba(211, 47, 47, 0.12));
+  border-color: #EF4444;
+}
+
+.light-theme .status-btn:disabled {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* --- Wish Modal --- */
+.wish-modal-content {
+  padding: 40px 24px 32px;
+  max-width: 350px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.wish-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition);
+  line-height: 1;
+  padding: 4px;
+}
+
+.wish-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.wish-emoji-container {
+  width: 84px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.02);
+}
+
+.light-theme .wish-emoji-container {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.04);
+}
+
+.wish-emoji {
+  font-size: 42px;
+  display: inline-block;
+  animation: bounce 2s infinite ease-in-out;
+  line-height: 1;
+}
+
+.wish-modal-content h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  letter-spacing: -0.3px;
+}
+
+.wish-text {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.wish-progress-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 18px;
+}
+
+.light-theme .wish-progress-container {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.wish-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+  border-radius: 2px;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.wish-modal-content.animating .wish-progress-bar {
+  animation: shrinkBar 6s linear forwards;
+}
+
+/* --- Animations --- */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+}
+
+@keyframes shrinkBar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

@@ -78,6 +78,18 @@
       <div class="progress-text" id="progress-text">Прогресс дня</div>
     </div>
 
+    <!-- Кнопка прихода на работу -->
+    <div class="work-status-container top-status">
+      <button class="status-btn arrive-btn" id="arrive-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <polyline points="10 17 15 12 10 7" />
+          <line x1="15" y1="12" x2="3" y2="12" />
+        </svg>
+        <span>Я на работе</span>
+      </button>
+    </div>
+
     <!-- Утренние задачи -->
     <section class="section-block">
       <div class="section-card">
@@ -147,10 +159,37 @@
       </div>
     </section>
 
+    <!-- Кнопка ухода с работы -->
+    <div class="work-status-container bottom-status">
+      <button class="status-btn leave-btn" id="leave-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span>Ушла с работы</span>
+      </button>
+    </div>
+
   </div>
 
   <div id="toast" class="toast"></div>
   <div id="offline-banner" class="offline-banner">⚠️ Нет подключения</div>
+
+  <!-- Wish Modal -->
+  <div id="wish-modal" class="pin-modal">
+    <div class="pin-modal-content wish-modal-content">
+      <button class="wish-close-btn" id="wish-close">✕</button>
+      <div class="wish-emoji-container">
+        <div class="wish-emoji" id="wish-emoji">☀️</div>
+      </div>
+      <h2 id="wish-title">Доброе утро!</h2>
+      <p class="wish-text" id="wish-text">Желаем вам хорошего дня!</p>
+      <div class="wish-progress-container">
+        <div class="wish-progress-bar" id="wish-progress-bar"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Instructions Modal -->
   <div id="instructions-modal" class="pin-modal">

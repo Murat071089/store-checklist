@@ -12,6 +12,35 @@
   let undoTimers = new Map(); // taskId -> { timerId, expireAt }
   let refreshTimer = null;
 
+  // Списки пожеланий (по 10 вариантов)
+  const MORNING_WISHES = [
+    "Доброго утра! Пусть этот день принесет много улыбок и отличных продаж! ☀️",
+    "Прекрасного дня! Ты делаешь этот магазин лучшим. Удачи сегодня! ✨",
+    "С добрым утром! Желаем неиссякаемой энергии и отличного настроения! 💫",
+    "Продуктивного и легкого дня! Пусть каждый покупатель уходит с улыбкой! 🛍️",
+    "Удачного старта! Пусть сегодня все задачи решаются легко и быстро! 🚀",
+    "Чудесного дня! Сияй, вдохновляй и радуй наших любимых покупателей! 🌟",
+    "Привет! Желаем море позитива, здоровья и прекрасного настроения сегодня! 🍀",
+    "Доброго и успешного дня! Пусть он будет наполнен приятными моментами! 🌸",
+    "С началом нового дня! Пусть работа будет в радость, а результаты радуют! 🏆",
+    "Энергичного и яркого дня! Желаем отличной атмосферы и больших чеков! 💎"
+  ];
+
+  const EVENING_WISHES = [
+    "Хорошего вечера! Спасибо за отличную работу сегодня. Отдыхай с удовольствием! 🌆",
+    "Прекрасного отдыха! Ты сегодня отлично постаралась, время восстановить силы! 🌙",
+    "Приятного вечера! Пусть домашний уют подарит тебе тепло и покой! 🏡",
+    "Спасибо за твой труд! Желаем уютного, спокойного и расслабряющего вечера! ✨",
+    "Рабочий день позади! Пусть этот вечер принесет только радость и отдых! 🍕",
+    "Отличного вечера! Наслаждайся свободным временем и набирайся сил! 💫",
+    "Заслуженный отдых! Спасибо за преданность делу и прекрасный день! 🥇",
+    "Хорошего и мирного вечера! Пусть все заботы дня растают без следа! 🌌",
+    "Приятного завершения дня! Проведи это время в окружении любимых людей! ☕",
+    "Свобода! Желаем чудесного вечера, крепкого сна и отличного настроения! 🛌"
+  ];
+
+  let wishModalTimer = null;
+
   // Иконки задач (Кастомные SVG-строки)
   const TASK_ICONS = {
     m1: `<svg viewBox="0 0 24 24"><path d="M5 3H19V21H5V3Z" /><path d="M14 12H15" /><path d="M2 21H22" /></svg>`, // передняя дверь
@@ -128,6 +157,7 @@
     updateProgress();
     updateSectionCounts();
     renderCustomersLog();
+    checkAndUpdateWorkStatus();
   }
 
   function renderSection(section, tasks, container) {
@@ -490,6 +520,148 @@
     return null;
   }
 
+  /** Показать модальное окно с пожеланием */
+  function showWishModal(type) {
+    const modal = document.getElementById('wish-modal');
+    if (!modal) return;
+
+    const emojiEl = document.getElementById('wish-emoji');
+    const titleEl = document.getElementById('wish-title');
+    const textEl = document.getElementById('wish-text');
+    const contentEl = modal.querySelector('.wish-modal-content');
+
+    const dayIndex = new Date().getDate() % 10;
+
+    if (type === 'arrive') {
+      emojiEl.textContent = '☀️';
+      titleEl.textContent = 'Доброе утро!';
+      textEl.textContent = MORNING_WISHES[dayIndex];
+    } else {
+      emojiEl.textContent = '🌙';
+      titleEl.textContent = 'Хорошего вечера!';
+      textEl.textContent = EVENING_WISHES[dayIndex];
+    }
+
+    if (wishModalTimer) {
+      clearTimeout(wishModalTimer);
+      wishModalTimer = null;
+    }
+
+    modal.classList.add('active');
+    
+    contentEl.classList.remove('animating');
+    void contentEl.offsetWidth; // Триггер reflow
+    contentEl.classList.add('animating');
+
+    const closeBtn = document.getElementById('wish-close');
+    const handleClose = () => {
+      modal.classList.remove('active');
+      contentEl.classList.remove('animating');
+      if (wishModalTimer) {
+        clearTimeout(wishModalTimer);
+        wishModalTimer = null;
+      }
+      closeBtn.removeEventListener('click', handleClose);
+      modal.removeEventListener('click', handleOutsideClick);
+    };
+
+    const handleOutsideClick = (e) => {
+      if (e.target === modal) handleClose();
+    };
+
+    closeBtn.addEventListener('click', handleClose);
+    modal.addEventListener('click', handleOutsideClick);
+
+    wishModalTimer = setTimeout(handleClose, 6000);
+  }
+
+  /** Проверить и настроить кнопки «Я на работе» / «Ушла с работы» */
+  function checkAndUpdateWorkStatus() {
+    if (!currentUser) return;
+    
+    const todayKey = formatDateAPI(new Date());
+    const arriveKey = `status_arrive_${currentUser.name}_${todayKey}`;
+    const leaveKey = `status_leave_${currentUser.name}_${todayKey}`;
+
+    const arriveTime = localStorage.getItem(arriveKey);
+    const leaveTime = localStorage.getItem(leaveKey);
+
+    const arriveBtn = document.getElementById('arrive-btn');
+    const leaveBtn = document.getElementById('leave-btn');
+
+    if (arriveBtn) {
+      if (arriveTime) {
+        arriveBtn.disabled = true;
+        arriveBtn.querySelector('span').textContent = `На работе (с ${arriveTime})`;
+      } else {
+        arriveBtn.disabled = false;
+        arriveBtn.querySelector('span').textContent = 'Я на работе';
+      }
+    }
+
+    if (leaveBtn) {
+      if (leaveTime) {
+        leaveBtn.disabled = true;
+        leaveBtn.querySelector('span').textContent = `Ушла с работы (в ${leaveTime})`;
+      } else {
+        leaveBtn.disabled = false;
+        leaveBtn.querySelector('span').textContent = 'Ушла с работы';
+      }
+    }
+  }
+
+  async function handleArriveClick() {
+    const arriveBtn = document.getElementById('arrive-btn');
+    if (!arriveBtn || arriveBtn.disabled) return;
+
+    arriveBtn.disabled = true;
+    arriveBtn.querySelector('span').textContent = '⏳ Отправка...';
+
+    try {
+      const result = await API.logWorkStatus(currentUser.name, 'arrive');
+      if (result.success) {
+        const todayKey = formatDateAPI(new Date());
+        const arriveKey = `status_arrive_${currentUser.name}_${todayKey}`;
+        localStorage.setItem(arriveKey, result.timeStr);
+        
+        showWishModal('arrive');
+        checkAndUpdateWorkStatus();
+        showToast('🌅 Время прибытия зафиксировано!', 'success');
+      }
+    } catch (err) {
+      console.error('Ошибка логирования прихода:', err);
+      showToast('Ошибка сети при отправке статуса', 'error');
+      arriveBtn.disabled = false;
+      arriveBtn.querySelector('span').textContent = 'Я на работе';
+    }
+  }
+
+  async function handleLeaveClick() {
+    const leaveBtn = document.getElementById('leave-btn');
+    if (!leaveBtn || leaveBtn.disabled) return;
+
+    leaveBtn.disabled = true;
+    leaveBtn.querySelector('span').textContent = '⏳ Отправка...';
+
+    try {
+      const result = await API.logWorkStatus(currentUser.name, 'leave');
+      if (result.success) {
+        const todayKey = formatDateAPI(new Date());
+        const leaveKey = `status_leave_${currentUser.name}_${todayKey}`;
+        localStorage.setItem(leaveKey, result.timeStr);
+
+        showWishModal('leave');
+        checkAndUpdateWorkStatus();
+        showToast('🌆 Время ухода зафиксировано!', 'success');
+      }
+    } catch (err) {
+      console.error('Ошибка логирования ухода:', err);
+      showToast('Ошибка сети при отправке статуса', 'error');
+      leaveBtn.disabled = false;
+      leaveBtn.querySelector('span').textContent = 'Ушла с работы';
+    }
+  }
+
   // --- Инициализация ---
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -507,6 +679,12 @@
 
     // Кнопка «Покупатели зашли»
     document.getElementById('customers-btn').addEventListener('click', handleCustomersEvent);
+
+    // Кнопки прихода и ухода
+    const arriveBtn = document.getElementById('arrive-btn');
+    const leaveBtn = document.getElementById('leave-btn');
+    if (arriveBtn) arriveBtn.addEventListener('click', handleArriveClick);
+    if (leaveBtn) leaveBtn.addEventListener('click', handleLeaveClick);
 
     // Отслеживание сети
     window.addEventListener('online', () => {

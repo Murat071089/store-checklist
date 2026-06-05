@@ -446,5 +446,23 @@ const API = {
     }
 
     return { success: true, timeStr };
+  },
+
+  /**
+   * Зафиксировать приход или уход с работы
+   */
+  async logWorkStatus(employee, status) {
+    const isArrive = status === 'arrive';
+    const timeStr = this._nowTimeStr();
+    
+    let msg = ``;
+    if (isArrive) {
+      msg = `🌅 <b>${employee} пришла на работу!</b>\n🕒 <b>Время прибытия:</b> ${timeStr}`;
+    } else {
+      msg = `🌆 <b>${employee} ушла с работы!</b>\n🕒 <b>Время ухода:</b> ${timeStr}`;
+    }
+    
+    await this._sendTelegram(msg);
+    return { success: true, timeStr };
   }
 };
