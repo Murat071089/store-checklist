@@ -132,7 +132,6 @@
 
 /* --- Card Background Design Redesign (Default Dark & Light) --- */
 .user-btn,
-.pin-modal-content,
 .section-card,
 .employee-summary-card,
 .customers-journal,
@@ -155,7 +154,6 @@
 }
 
 .light-theme .user-btn,
-.light-theme .pin-modal-content,
 .light-theme .section-card,
 .light-theme .employee-summary-card,
 .light-theme .customers-journal,
@@ -380,17 +378,18 @@ body::after {
 }
 
 .app-logo {
-  width: 90px;
-  height: 90px;
+  width: 110px;
+  height: 110px;
   margin-bottom: 24px;
-  border-radius: 24px;
-  border: 1px solid var(--border-accent);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-radius: 50%;
+  border: 2px solid rgba(216, 138, 50, 0.4);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(216, 138, 50, 0.2);
   position: relative;
   z-index: 2;
   animation: scaleIn 0.7s var(--transition-spring);
   transition: transform var(--transition);
-  background: var(--bg-elevated);
+  background: #FFFBF7;
+  object-fit: cover;
 }
 
 .app-logo:hover {
@@ -2245,4 +2244,14 @@ body {
 }
 .light-theme .theme-switch .moon-icon {
   color: rgba(0, 0, 0, 0.1);
+}
+
+/* PIN Modal Background Overrides */
+.pin-modal {
+  background: var(--bg-deep) url('../icons/bg_dark.png') no-repeat center center fixed !important;
+  background-size: cover !important;
+}
+.light-theme .pin-modal {
+  background: var(--bg-deep) url('../icons/bg_light.png') no-repeat center center fixed !important;
+  background-size: cover !important;
 }
