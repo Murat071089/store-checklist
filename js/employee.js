@@ -288,26 +288,83 @@
 
   // --- Обработчики ---
 
-  async function handleCustomersEvent() {
-    const btn = document.getElementById('customers-btn');
-    btn.disabled = true;
-
-    try {
-      const result = await API.logCustomersEvent(currentUser.name);
-      if (result.success) {
-        customersLog.push({
-          employee: currentUser.name,
-          timestamp: new Date().toISOString(),
-          timeStr: result.timeStr
-        });
-        renderCustomersLog();
-        showToast('📱 Записано!', 'success');
-      }
-    } catch (err) {
-      showToast('Ошибка записи', 'error');
+  async function handleCompleteTask(taskId, taskName, section) {
+    // Блокируем кнопку
+    const card = document.getElementById('task-' + taskId);
+    const btn = card?.querySelector('.complete-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳';
     }
 
-    setTimeout(() => { btn.disabled = false; }, 1000);
+    try {
+      const result = await API.completeTask(currentUser.name, taskId, taskName, section);
+
+      if (result.success) {
+        // Обновляем локальное состояние
+        const compositeKey = currentUser.name + '_' + taskId;
+        completedTasks[compositeKey] = {
+          employee: currentUser.name,
+          completedAt: new Date().toISOString(),
+          isLate: result.isLate,
+          timeStr: result.timeStr,
+          section,
+          taskName
+        };
+
+        // Запускаем таймер отмены (60 секунд)
+        const expireAt = Date.now() + CONFIG.UNDO_TIMEOUT;
+        const timerId = setTimeout(() => {
+          undoTimers.delete(taskId);
+          const taskDef = findTask(taskId);
+          if (taskDef) {
+            const container = card.parentElement;
+            const curCard = document.getElementById('task-' + taskId);
+            if (curCard && container) {
+              const newCard = createTaskCard(taskDef, section, completedTasks[compositeKey]);
+              container.replaceChild(newCard, curCard);
+            }
+          }
+        }, CONFIG.UNDO_TIMEOUT);
+
+        undoTimers.set(taskId, { timerId, expireAt });
+
+        renderAll();
+
+        const message = result.isLate
+          ? `⚠️ Отмечено с опозданием: ${taskName}`
+          : `✅ Выполнено: ${taskName}`;
+        showToast(message, result.isLate ? 'warning' : 'success');
+      }
+    } catch (err) {
+      console.error('Ошибка:', err);
+      showToast('Ошибка сохранения', 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="20 6 9 17 4 12" /></svg>`;
+      }
+    }
+  }
+
+  async function handleUndoTask(taskId, section) {
+    try {
+      await API.undoTask(currentUser.name, taskId, section);
+
+      const compositeKey = currentUser.name + '_' + taskId;
+      delete completedTasks[compositeKey];
+
+      const undoInfo = undoTimers.get(taskId);
+      if (undoInfo) {
+        clearTimeout(undoInfo.timerId);
+        undoTimers.delete(taskId);
+      }
+
+      renderAll();
+      showToast('↩ Отмена выполнена', 'success');
+    } catch (err) {
+      console.error('Ошибка отмены:', err);
+      showToast('Ошибка при отмене', 'error');
+    }
   }
 
   /** Показать модалку «Не выполнено» с полем для причины */
