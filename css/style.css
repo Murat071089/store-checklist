@@ -2381,3 +2381,61 @@ body {
 .instruction-text li b {
   color: var(--text-primary);
 }
+
+/* Date Row & Header Instructions Button */
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.header-instructions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(216, 138, 50, 0.04);
+  border: 1px solid rgba(216, 138, 50, 0.35);
+  color: var(--text-secondary);
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-instructions-btn:hover {
+  background: rgba(216, 138, 50, 0.08);
+  border-color: rgba(216, 138, 50, 0.65);
+  color: var(--text-primary);
+  box-shadow: 0 0 10px rgba(216, 138, 50, 0.15);
+  transform: translateY(-1px);
+}
+
+.header-instructions-btn:active {
+  transform: translateY(0);
+}
+
+.header-instructions-btn svg.sparkles-icon {
+  width: 13px;
+  height: 13px;
+  color: #F0A94A; /* Sparkles bright gold color */
+  fill: #F0A94A;
+}
+
+.light-theme .header-instructions-btn {
+  background: rgba(216, 138, 50, 0.03);
+  border-color: rgba(216, 138, 50, 0.25);
+  box-shadow: 0 2px 4px rgba(45, 37, 30, 0.03);
+}
+
+.light-theme .header-instructions-btn:hover {
+  background: rgba(216, 138, 50, 0.06);
+  border-color: rgba(216, 138, 50, 0.45);
+}
