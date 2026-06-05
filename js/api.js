@@ -198,6 +198,58 @@ const API = {
   },
 
   /**
+   * Проверить завершённость секции и отправить групповое уведомление в Telegram
+   */
+  _checkAndSendSectionNotification(employee, section, date) {
+    if (section === 'daytime') return;
+
+    const sectionTasks = TASKS[section];
+    if (!sectionTasks) return;
+
+    const data = this._getLocalData(date);
+    
+    // Подсчитываем выполненные и проваленные задачи сотрудника в этой секции
+    const completedList = [];
+    const failedList = [];
+    sectionTasks.forEach(task => {
+      const compositeKey = employee + '_' + task.id;
+      const entry = data[compositeKey];
+      if (entry) {
+        if (entry.isFailed) {
+          failedList.push(entry);
+        } else {
+          completedList.push(entry);
+        }
+      }
+    });
+
+    const totalInSection = sectionTasks.length;
+    const completedCount = completedList.length;
+    const failedCount = failedList.length;
+    const totalDone = completedCount + failedCount;
+
+    if (totalDone === totalInSection) {
+      const isMorning = section === 'morning';
+      const timeStr = this._nowTimeStr();
+      
+      let msg = `${isMorning ? '🌅' : '🌆'} <b>${isMorning ? 'Утренний' : 'Вечерний'} чек-лист завершён!</b>\n`;
+      msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
+      msg += `🕒 <b>Время завершения:</b> ${timeStr}\n`;
+      msg += `✅ Выполнено задач: <b>${completedCount}</b>\n`;
+      msg += `❌ Не выполнено: <b>${failedCount}</b>\n`;
+      
+      if (failedCount > 0) {
+        msg += `\n<b>Невыполненные пункты:</b>\n`;
+        failedList.forEach(item => {
+          msg += `• ${item.taskName} (Причина: <i>${item.reason || 'не указана'}</i>)\n`;
+        });
+      }
+
+      this._sendTelegram(msg);
+    }
+  },
+
+  /**
    * Отметить задачу как выполненную
    */
   async completeTask(employee, taskId, taskName, section) {
@@ -251,15 +303,19 @@ const API = {
       }
     }
 
-    // Формируем сообщение для Telegram
-    let msg = `${isLate ? '⚠️' : '✅'} <b>Выполнено:</b> ${taskName}\n`;
-    msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
-    msg += `🕒 <b>Время:</b> ${timeStr}\n`;
-    if (isLate) {
-      msg += `🔴 <i>Внимание: выполнено после дедлайна (${CONFIG.DEADLINES[section]}:00)!</i>`;
+    // Уведомление в Telegram:
+    // Дневные задачи отправляем сразу. Утренние/вечерние — только когда закрыта вся секция.
+    if (section === 'daytime') {
+      let msg = `${isLate ? '⚠️' : '✅'} <b>Выполнено:</b> ${taskName}\n`;
+      msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
+      msg += `🕒 <b>Время:</b> ${timeStr}\n`;
+      if (isLate) {
+        msg += `🔴 <i>Внимание: выполнено после дедлайна (${CONFIG.DEADLINES[section]}:00)!</i>`;
+      }
+      this._sendTelegram(msg);
+    } else {
+      this._checkAndSendSectionNotification(employee, section, date);
     }
-
-    this._sendTelegram(msg);
 
     return { success: true, isLate, timeStr };
   },
@@ -292,11 +348,13 @@ const API = {
       }
     }
 
-    let msg = `↩️ <b>Отмена выполнения:</b> ${taskName}\n`;
-    msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
-    msg += `🕒 <b>Время отмены:</b> ${this._nowTimeStr()}`;
-
-    this._sendTelegram(msg);
+    // Для утренней и вечерней секций не шлём спам-отмены в Telegram, только для дневных задач
+    if (section === 'daytime') {
+      let msg = `↩️ <b>Отмена выполнения:</b> ${taskName}\n`;
+      msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
+      msg += `🕒 <b>Время отмены:</b> ${this._nowTimeStr()}`;
+      this._sendTelegram(msg);
+    }
 
     return { success: true };
   },
@@ -340,12 +398,17 @@ const API = {
       }
     }
 
-    let msg = `❌ <b>Не выполнено:</b> ${taskName}\n`;
-    msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
-    msg += `🕒 <b>Время:</b> ${timeStr}\n`;
-    msg += `💬 <b>Причина:</b> ${reason || 'не указана'}`;
-
-    this._sendTelegram(msg);
+    // Уведомление в Telegram:
+    // Дневные задачи отправляем сразу. Утренние/вечерние — только когда закрыта вся секция.
+    if (section === 'daytime') {
+      let msg = `❌ <b>Не выполнено:</b> ${taskName}\n`;
+      msg += `👤 <b>Сотрудник:</b> ${employee}\n`;
+      msg += `🕒 <b>Время:</b> ${timeStr}\n`;
+      msg += `💬 <b>Причина:</b> ${reason || 'не указана'}`;
+      this._sendTelegram(msg);
+    } else {
+      this._checkAndSendSectionNotification(employee, section, date);
+    }
 
     return { success: true, timeStr };
   },

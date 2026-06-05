@@ -1,8 +1,7 @@
-// ============================================
-// Service Worker — Чек-лист магазина v2
+// Service Worker — Чек-лист магазина v3
 // ============================================
 
-const CACHE_NAME = 'checklist-v2';
+const CACHE_NAME = 'checklist-v3';
 
 const FILES_TO_CACHE = [
   './',
@@ -15,6 +14,7 @@ const FILES_TO_CACHE = [
   './js/auth.js',
   './js/employee.js',
   './js/admin.js',
+  './js/pwa-install.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
@@ -53,11 +53,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // API-запросы (Supabase, Telegram, Google) — ТОЛЬКО сеть, без кэша
+  // API-запросы (Supabase, Telegram) — ТОЛЬКО сеть, без кэша
   if (url.hostname.includes('supabase.co') ||
-      url.hostname.includes('api.telegram.org') ||
-      url.hostname.includes('script.google.com') ||
-      url.hostname.includes('googleapis.com')) {
+      url.hostname.includes('api.telegram.org')) {
     event.respondWith(
       fetch(event.request).catch(() => {
         return new Response(JSON.stringify({

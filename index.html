@@ -54,6 +54,14 @@
       </button>
     </div>
 
+    <!-- PWA Install Button -->
+    <button id="pwa-install-btn" class="pwa-install-btn" style="display: none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+      </svg>
+      Установить на телефон
+    </button>
+
     <!-- PIN Pad Modal -->
     <div id="pin-modal" class="pin-modal">
       <div class="pin-modal-content" id="pin-modal-content">
@@ -102,11 +110,28 @@
     </div>
   </div>
 
+  <!-- iOS Install Instructions Modal -->
+  <div id="ios-install-modal" class="pin-modal">
+    <div class="pin-modal-content ios-install-content">
+      <button class="pin-close" id="ios-install-close">×</button>
+      <h2>Установка на iPhone / iPad</h2>
+      <div class="ios-instructions">
+        <p>Чтобы установить приложение как иконку на рабочий стол:</p>
+        <ol>
+          <li>Нажмите на кнопку <strong>«Поделиться»</strong> в Safari (иконка прямоугольника со стрелкой вверх <span style="font-size: 1.1rem; vertical-align: middle;">📤</span> внизу экрана).</li>
+          <li>В открывшемся меню выберите пункт <strong>«На экран "Домой"»</strong> (Add to Home Screen).</li>
+          <li>Нажмите <strong>«Добавить»</strong> в верхнем правом углу.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
   <div id="offline-banner" class="offline-banner">⚠️ Нет подключения</div>
 
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/pwa-install.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
