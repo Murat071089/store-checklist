@@ -13,14 +13,14 @@ const CONFIG = {
 
   // PIN-коды пользователей
   PINS: {
-    'Агнеса': '1111',
+    'Агнесса': '1111',
     'Оксана': '2222',
     'Владелец': '0000'
   },
 
   // Пользователи системы
   USERS: {
-    'agnesa': { name: 'Агнеса', role: 'employee' },
+    'agnesa': { name: 'Агнесса', role: 'employee' },
     'oksana': { name: 'Оксана', role: 'employee' },
     'owner':  { name: 'Владелец', role: 'admin' }
   },

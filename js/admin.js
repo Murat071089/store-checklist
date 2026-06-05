@@ -12,7 +12,7 @@
   let refreshTimer = null;
 
   // Сотрудники
-  const EMPLOYEES = ['Агнеса', 'Оксана'];
+  const EMPLOYEES = ['Агнесса', 'Оксана'];
 
   // --- Утилиты ---
 
@@ -192,7 +192,7 @@
   }
 
   function renderEmployeeCard(employee) {
-    const key = employee === 'Агнеса' ? 'agnesa' : 'oksana';
+    const key = employee === 'Агнесса' ? 'agnesa' : 'oksana';
 
     const sections = ['morning', 'daytime', 'evening'];
     let totalCompleted = 0;

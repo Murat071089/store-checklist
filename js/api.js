@@ -107,7 +107,7 @@ const API = {
 
   /**
    * Проверить PIN-код пользователя
-   * @param {string} username - Имя пользователя (Агнеса / Оксана / Владелец)
+   * @param {string} username - Имя пользователя (Агнесса / Оксана / Владелец)
    * @param {string} pin - Введённый PIN-код
    * @returns {Promise<{ success: boolean, error?: string }>}
    */
