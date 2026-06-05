@@ -156,7 +156,6 @@
     renderSection('evening', TASKS.evening, document.getElementById('evening-tasks'));
     updateProgress();
     updateSectionCounts();
-    renderCustomersLog();
     checkAndUpdateWorkStatus();
   }
 
@@ -287,114 +286,7 @@
     });
   }
 
-  function renderCustomersLog() {
-    const countEl = document.getElementById('customers-count');
-    const logEl = document.getElementById('customers-log');
-
-    if (customersLog.length === 0) {
-      countEl.textContent = '';
-      logEl.innerHTML = '';
-      return;
-    }
-
-    countEl.textContent = `Нажато сегодня: ${customersLog.length} раз`;
-
-    // Показываем последние 20 записей (новые сверху)
-    const recent = [...customersLog].reverse().slice(0, 20);
-    logEl.innerHTML = recent.map(entry => {
-      const time = entry.timeStr || extractTime(entry.timestamp);
-      return `
-        <div class="customers-log-entry">
-          <span style="display:flex;align-items:center;gap:6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--accent-bright);"><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg>
-            ${entry.employee}
-          </span>
-          <span class="log-time">${time}</span>
-        </div>
-      `;
-    }).join('');
-  }
-
   // --- Обработчики ---
-
-  async function handleCompleteTask(taskId, taskName, section) {
-    // Блокируем кнопку
-    const card = document.getElementById('task-' + taskId);
-    const btn = card?.querySelector('.complete-btn');
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '⏳';
-    }
-
-    try {
-      const result = await API.completeTask(currentUser.name, taskId, taskName, section);
-
-      if (result.success) {
-        // Обновляем локальное состояние
-        const compositeKey = currentUser.name + '_' + taskId;
-        completedTasks[compositeKey] = {
-          employee: currentUser.name,
-          completedAt: new Date().toISOString(),
-          isLate: result.isLate,
-          timeStr: result.timeStr,
-          section,
-          taskName
-        };
-
-        // Запускаем таймер отмены (60 секунд)
-        const expireAt = Date.now() + CONFIG.UNDO_TIMEOUT;
-        const timerId = setTimeout(() => {
-          undoTimers.delete(taskId);
-          const taskDef = findTask(taskId);
-          if (taskDef) {
-            const container = card.parentElement;
-            const curCard = document.getElementById('task-' + taskId);
-            if (curCard && container) {
-              const newCard = createTaskCard(taskDef, section, completedTasks[compositeKey]);
-              container.replaceChild(newCard, curCard);
-            }
-          }
-        }, CONFIG.UNDO_TIMEOUT);
-
-        undoTimers.set(taskId, { timerId, expireAt });
-
-        renderAll();
-
-        const message = result.isLate
-          ? `⚠️ Отмечено с опозданием: ${taskName}`
-          : `✅ Выполнено: ${taskName}`;
-        showToast(message, result.isLate ? 'warning' : 'success');
-      }
-    } catch (err) {
-      console.error('Ошибка:', err);
-      showToast('Ошибка сохранения', 'error');
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="20 6 9 17 4 12" /></svg>`;
-      }
-    }
-  }
-
-  async function handleUndoTask(taskId, section) {
-    try {
-      await API.undoTask(currentUser.name, taskId, section);
-
-      const compositeKey = currentUser.name + '_' + taskId;
-      delete completedTasks[compositeKey];
-
-      const undoInfo = undoTimers.get(taskId);
-      if (undoInfo) {
-        clearTimeout(undoInfo.timerId);
-        undoTimers.delete(taskId);
-      }
-
-      renderAll();
-      showToast('↩ Отмена выполнена', 'success');
-    } catch (err) {
-      console.error('Ошибка отмены:', err);
-      showToast('Ошибка при отмене', 'error');
-    }
-  }
 
   async function handleCustomersEvent() {
     const btn = document.getElementById('customers-btn');
@@ -575,13 +467,21 @@
     wishModalTimer = setTimeout(handleClose, 6000);
   }
 
+  /** Получить ключи localStorage для статуса работы */
+  function _workStatusKeys() {
+    const todayKey = formatDateAPI(new Date());
+    return {
+      arriveKey: `status_arrive_${currentUser.name}_${todayKey}`,
+      leaveKey: `status_leave_${currentUser.name}_${todayKey}`,
+      todayKey
+    };
+  }
+
   /** Проверить и настроить кнопки «Я на работе» / «Ушла с работы» */
   function checkAndUpdateWorkStatus() {
     if (!currentUser) return;
     
-    const todayKey = formatDateAPI(new Date());
-    const arriveKey = `status_arrive_${currentUser.name}_${todayKey}`;
-    const leaveKey = `status_leave_${currentUser.name}_${todayKey}`;
+    const { arriveKey, leaveKey } = _workStatusKeys();
 
     const arriveTime = localStorage.getItem(arriveKey);
     const leaveTime = localStorage.getItem(leaveKey);
@@ -589,8 +489,32 @@
     const arriveBtn = document.getElementById('arrive-btn');
     const leaveBtn = document.getElementById('leave-btn');
 
+    // Если оба нажаты (полный цикл) и нет активного таймера отмены — сбрасываем оба
+    const arriveUndoActive = undoTimers.has('_arrive');
+    const leaveUndoActive = undoTimers.has('_leave');
+    if (arriveTime && leaveTime && !arriveUndoActive && !leaveUndoActive) {
+      localStorage.removeItem(arriveKey);
+      localStorage.removeItem(leaveKey);
+      // После сброса обновляем UI
+      if (arriveBtn) {
+        arriveBtn.disabled = false;
+        arriveBtn.querySelector('span').textContent = 'Я на работе';
+      }
+      if (leaveBtn) {
+        leaveBtn.disabled = false;
+        leaveBtn.querySelector('span').textContent = 'Ушла с работы';
+      }
+      return;
+    }
+
     if (arriveBtn) {
-      if (arriveTime) {
+      if (arriveUndoActive) {
+        // Показываем кнопку отмены
+        const info = undoTimers.get('_arrive');
+        const secs = Math.ceil((info.expireAt - Date.now()) / 1000);
+        arriveBtn.disabled = true;
+        arriveBtn.querySelector('span').innerHTML = `На работе (с ${arriveTime}) &nbsp;<button class="undo-status-btn" id="undo-arrive">↩ Отменить (${secs}с)</button>`;
+      } else if (arriveTime) {
         arriveBtn.disabled = true;
         arriveBtn.querySelector('span').textContent = `На работе (с ${arriveTime})`;
       } else {
@@ -600,7 +524,12 @@
     }
 
     if (leaveBtn) {
-      if (leaveTime) {
+      if (leaveUndoActive) {
+        const info = undoTimers.get('_leave');
+        const secs = Math.ceil((info.expireAt - Date.now()) / 1000);
+        leaveBtn.disabled = true;
+        leaveBtn.querySelector('span').innerHTML = `Ушла (в ${leaveTime}) &nbsp;<button class="undo-status-btn" id="undo-leave">↩ Отменить (${secs}с)</button>`;
+      } else if (leaveTime) {
         leaveBtn.disabled = true;
         leaveBtn.querySelector('span').textContent = `Ушла с работы (в ${leaveTime})`;
       } else {
@@ -608,6 +537,42 @@
         leaveBtn.querySelector('span').textContent = 'Ушла с работы';
       }
     }
+
+    // Подключаем клики на кнопки отмены (они внутри span)
+    const undoArriveBtn = document.getElementById('undo-arrive');
+    if (undoArriveBtn) {
+      undoArriveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleUndoWorkStatus('arrive');
+      });
+    }
+    const undoLeaveBtn = document.getElementById('undo-leave');
+    if (undoLeaveBtn) {
+      undoLeaveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleUndoWorkStatus('leave');
+      });
+    }
+  }
+
+  function handleUndoWorkStatus(type) {
+    const { arriveKey, leaveKey } = _workStatusKeys();
+    const timerKey = type === 'arrive' ? '_arrive' : '_leave';
+    const storageKey = type === 'arrive' ? arriveKey : leaveKey;
+
+    localStorage.removeItem(storageKey);
+
+    const info = undoTimers.get(timerKey);
+    if (info) {
+      clearTimeout(info.timerId);
+      undoTimers.delete(timerKey);
+    }
+
+    // Отправляем уведомление об отмене
+    API._sendTelegram(`↩️ <b>Отмена:</b> ${currentUser.name} отменил(a) отметку «${type === 'arrive' ? 'Я на работе' : 'Ушла с работы'}»`);
+
+    checkAndUpdateWorkStatus();
+    showToast('↩ Отметка отменена', 'success');
   }
 
   async function handleArriveClick() {
@@ -620,11 +585,19 @@
     try {
       const result = await API.logWorkStatus(currentUser.name, 'arrive');
       if (result.success) {
-        const todayKey = formatDateAPI(new Date());
-        const arriveKey = `status_arrive_${currentUser.name}_${todayKey}`;
+        const { arriveKey } = _workStatusKeys();
         localStorage.setItem(arriveKey, result.timeStr);
         
         showWishModal('arrive');
+
+        // Таймер отмены 60 секунд
+        const expireAt = Date.now() + CONFIG.UNDO_TIMEOUT;
+        const timerId = setTimeout(() => {
+          undoTimers.delete('_arrive');
+          checkAndUpdateWorkStatus();
+        }, CONFIG.UNDO_TIMEOUT);
+        undoTimers.set('_arrive', { timerId, expireAt });
+
         checkAndUpdateWorkStatus();
         showToast('🌅 Время прибытия зафиксировано!', 'success');
       }
@@ -646,11 +619,19 @@
     try {
       const result = await API.logWorkStatus(currentUser.name, 'leave');
       if (result.success) {
-        const todayKey = formatDateAPI(new Date());
-        const leaveKey = `status_leave_${currentUser.name}_${todayKey}`;
+        const { leaveKey } = _workStatusKeys();
         localStorage.setItem(leaveKey, result.timeStr);
 
         showWishModal('leave');
+
+        // Таймер отмены 60 секунд
+        const expireAt = Date.now() + CONFIG.UNDO_TIMEOUT;
+        const timerId = setTimeout(() => {
+          undoTimers.delete('_leave');
+          checkAndUpdateWorkStatus();
+        }, CONFIG.UNDO_TIMEOUT);
+        undoTimers.set('_leave', { timerId, expireAt });
+
         checkAndUpdateWorkStatus();
         showToast('🌆 Время ухода зафиксировано!', 'success');
       }
@@ -676,9 +657,6 @@
 
     // Кнопка выхода
     document.getElementById('logout-btn').addEventListener('click', () => Auth.logout());
-
-    // Кнопка «Покупатели зашли»
-    document.getElementById('customers-btn').addEventListener('click', handleCustomersEvent);
 
     // Кнопки прихода и ухода
     const arriveBtn = document.getElementById('arrive-btn');

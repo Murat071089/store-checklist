@@ -2680,3 +2680,120 @@ body {
     transform: scaleX(0);
   }
 }
+
+/* --- Undo button inside status buttons --- */
+.undo-status-btn {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--accent-bright);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 99px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all var(--transition);
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.undo-status-btn:hover {
+  background: rgba(216, 138, 50, 0.15);
+  border-color: var(--accent-bright);
+  transform: scale(1.05);
+}
+
+.undo-status-btn:active {
+  transform: scale(0.95);
+}
+
+.light-theme .undo-status-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--accent-deep);
+}
+
+.light-theme .undo-status-btn:hover {
+  background: rgba(216, 138, 50, 0.1);
+  border-color: var(--accent);
+}
+
+/* --- Work Status Info in Admin Panel --- */
+.work-status-info {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.work-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.work-status-row svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.work-status-row .status-time {
+  color: var(--text-secondary);
+  margin-left: auto;
+  font-weight: 500;
+  font-size: 12.5px;
+}
+
+.work-status-row.arrived {
+  color: var(--success-bright);
+}
+
+.work-status-row.arrived svg {
+  stroke: var(--success-bright);
+}
+
+.work-status-row.left {
+  color: #FCA5A5;
+}
+
+.work-status-row.left svg {
+  stroke: #FCA5A5;
+}
+
+.work-status-row.not-yet {
+  color: var(--text-muted);
+}
+
+.work-status-row.not-yet svg {
+  stroke: var(--text-muted);
+}
+
+.light-theme .work-status-info {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.light-theme .work-status-row.arrived {
+  color: var(--success);
+}
+
+.light-theme .work-status-row.arrived svg {
+  stroke: var(--success);
+}
+
+.light-theme .work-status-row.left {
+  color: var(--error-critical);
+}
+
+.light-theme .work-status-row.left svg {
+  stroke: var(--error-critical);
+}
+

@@ -87,7 +87,7 @@
   function renderAll() {
     renderOverallStatus();
     EMPLOYEES.forEach(emp => renderEmployeeCard(emp));
-    renderCustomersJournal();
+    renderWorkStatus();
   }
 
   /**
@@ -267,36 +267,38 @@
     }
   }
 
-  function renderCustomersJournal() {
-    const journalEl = document.getElementById('customers-journal');
+  function renderWorkStatus() {
+    const loginIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>`;
+    const logoutIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`;
 
-    if (dayData.customersLog.length === 0) {
-      journalEl.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
-          </div>
-          <p>Записей пока нет</p>
-        </div>
-      `;
-      return;
-    }
+    EMPLOYEES.forEach(emp => {
+      const key = emp === 'Агнесса' ? 'agnesa' : 'oksana';
+      const el = document.getElementById(`${key}-work-status`);
+      if (!el) return;
 
-    // Сортируем по времени (новые сверху)
-    const sorted = [...dayData.customersLog].reverse();
+      const arriveKey = `status_arrive_${emp}_${selectedDate}`;
+      const leaveKey = `status_leave_${emp}_${selectedDate}`;
+      const arriveTime = localStorage.getItem(arriveKey);
+      const leaveTime = localStorage.getItem(leaveKey);
 
-    journalEl.innerHTML = sorted.map(entry => {
-      const time = entry.timeStr || extractTime(entry.timestamp);
-      return `
-        <div class="journal-entry">
-          <span class="journal-employee" style="display:flex;align-items:center;gap:6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;stroke:var(--accent-bright);"><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg>
-            ${entry.employee}
-          </span>
-          <span class="journal-time">${time}</span>
-        </div>
-      `;
-    }).join('');
+      let html = '';
+
+      // Приход
+      if (arriveTime) {
+        html += `<div class="work-status-row arrived">${loginIcon} Пришла на работу <span class="status-time">${arriveTime}</span></div>`;
+      } else {
+        html += `<div class="work-status-row not-yet">${loginIcon} Не отметилась</div>`;
+      }
+
+      // Уход
+      if (leaveTime) {
+        html += `<div class="work-status-row left">${logoutIcon} Ушла с работы <span class="status-time">${leaveTime}</span></div>`;
+      } else {
+        html += `<div class="work-status-row not-yet">${logoutIcon} Ещё на работе</div>`;
+      }
+
+      el.innerHTML = html;
+    });
   }
 
   // --- Модальное окно деталей ---
